@@ -46,8 +46,9 @@ var leftArrow = false;
 var rightArrow = false;
 
 var jump = false;
-var inAir = false;
 var rising = true;
+let falling = false;
+let startHeight;
 
 function move() {
     context.clearRect(0,0,1200,600);
@@ -62,52 +63,38 @@ function input() {
 
     if (leftArrow) {
         vivX = vivX - 4;
-
-        checkEdges();
     } else if (rightArrow) {
         vivX = vivX + 4;
-
-        checkEdges();
     }
-    if (jump) {
-        if (rising) {
-            start = vivY;
-            vivY = vivY - 4;
-            if (vivY <= 200) {
-                rising = false;
-            }
-        } else {
-            setTimeout(function() {
-                checkEdges();
-                if (vivY < 400) {
-                    vivY = vivY + 4;
 
-                    if (vivY >= 400) {
-                        rising = true;
-                        vivY = 400;
-                        jump = false;
-                    }
-                } 
-            }, 500);
-        }
+    checkEdges();
+    
+    if (jump) {
+        jumpLogic();
+    } else if (!onGround()) {
+        fallingJump();
     }
 }
 function keyDownHandler(e) {
-    if(e.key == "Right" || e.key == "ArrowRight") {
+    if (e.key == "Right" || e.key == "ArrowRight") {
         rightArrow = true;
     }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
+    else if (e.key == "Left" || e.key == "ArrowLeft") {
         leftArrow = true;
-    } else if(e.keyCode == '38') {
+    } else if (e.keyCode == '38') {
+        if (!jump) {
+            startHeight = vivY;
+        }
         jump = true;
+        
     }
 }
 
 function keyUpHandler(e) {
-    if(e.key == "Right" || e.key == "ArrowRight") {
+    if (e.key == "Right" || e.key == "ArrowRight") {
         rightArrow = false;
     }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
+    else if (e.key == "Left" || e.key == "ArrowLeft") {
         leftArrow = false;
     }
 }
@@ -137,10 +124,55 @@ function checkEdges() {
             }
     }
     if (vivX < dirt.xCoord - 100 ||
-        vivX > dirt.xCoord + dirt.width) {
+        vivX > dirt.xCoord + dirt.width ||
+        vivY < dirt.yCoord - dirt.height) {
         
         onTop = false;
     }
+}
+
+function jumpLogic() {
+    if (rising) {
+        risingJump();
+    } else {
+        fallingJump();
+    }
+}
+
+function onGround() {
+    let returnBool;
+    if (vivY >= 400 || onTop) {
+        returnBool = true;
+    } else {
+        returnBool = false;
+    }
+    return returnBool;
+}
+
+function risingJump() {
+    vivY = vivY - 4;
+    if (vivY <= startHeight - 200) {
+        rising = false;
+    }
+}
+
+function fallingJump() {
+    checkEdges();
+    if (onGround()) {
+        rising = true;
+        jump = false;
+    }
+    setTimeout(function() {
+        
+        if (!onGround()) {
+            vivY = vivY + 4;
+
+            if (onGround()) {
+                rising = true;
+                jump = false;
+            }
+        } 
+    }, 500);
 }
 
 gameLoop();
