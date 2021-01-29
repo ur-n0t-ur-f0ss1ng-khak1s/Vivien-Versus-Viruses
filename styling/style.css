@@ -1,14 +1,62 @@
-#character {
-    /* height: 100%;
-    width: 100%; */
-    padding: 0px;
+.btn:hover {
+    cursor: pointer;
 }
+
+#start {
+    height: 100vh;
+    width: 100vw;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Bungee', cursive;
+    color: #ce29f7;
+    position: relative;
+    background-color: #c8efff;
+}
+
+#title {
+    font-size: 12rem;
+    perspective: 600px;
+}
+
+#title > p {
+    transform: rotateX( 45deg );
+    line-height: 0.75;
+    text-align: center;
+    color: #610079;
+}
+
+#start.playing {
+    margin-top: -100vh;
+    transition: margin-top 1s;
+}
+
+#start.playing + #container-body {
+    display: flex;
+}
+
 #gameBoard {
     background-image: linear-gradient(yellow, red);
     border: black solid 2px;
 }
-body {
+#container {
+    margin: auto;
+}
+#container-body {
     height: 100vh;
     width: 100vw;
     margin: 0;
+    display:flex;
+    background-color: #c8efff;
+} 
+
+#container-body {
+    display: none;
+}
+
+#space {
+    height: 100px;
+}
+
+body {
+    overflow: hidden;
 }

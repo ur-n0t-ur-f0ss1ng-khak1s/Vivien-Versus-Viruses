@@ -10,6 +10,10 @@ class feature {
         this.height = h;
     }
 }
+//startgame button
+let startBtn = document.getElementById("start-button");
+startBtn.addEventListener("click", startGame);
+
 var map = document.getElementById("gameBoard");
 var context = map.getContext("2d");
 
@@ -175,4 +179,7 @@ function fallingJump() {
     }, 500);
 }
 
+function startGame() {
+    start.classList.add("playing");
+}
 gameLoop();
