@@ -30,7 +30,7 @@ standing.addEventListener("load", function() {
     context.drawImage(standing, 0, 400);
     context.drawImage(dirtBlock, 300, 400);
 }, false);
-standing.src = "images/standing2pt1.png";
+standing.src = "images/standGun.png";
 dirtBlock.src = "images/dirtBlock.png";
 
 let dirt = new feature(300, 400, 200, 200);
@@ -39,11 +39,11 @@ function gameLoop() {
     input();
 
     move();
-
+    console.log(vivY, startHeight, rising, jump);
     window.requestAnimationFrame(gameLoop);
 }
 var vivX = 0;
-var vivY = 400;
+let vivY = 400;
 var onTop = false;
 
 var leftArrow = false;
@@ -55,6 +55,7 @@ let falling = false;
 let startHeight;
 
 function move() {
+
     context.clearRect(0,0,1200,600);
     context.fillRect(0,0,1200,600);
     context.drawImage(standing, vivX, vivY);
@@ -65,32 +66,48 @@ function input() {
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
 
+    if (jump) {
+        standing.src = "images/jumpV1.png";
+        jumpLogic();
+    } else if (!onGround()) {
+        rising = false;
+        standing.src = "images/jumpV1.png";
+        fallingJump();
+    } else {
+        standing.src = "images/standGun.png";
+    }
+
     if (leftArrow) {
+        standing.src = "images/running1flipped.png";
         vivX = vivX - 4;
+        if (!onGround) {
+            standing.src = "images/jumpLeftV1.1.png";
+        }
     } else if (rightArrow) {
+        standing.src = "images/running1.png";
         vivX = vivX + 4;
+        if (!onGround) {
+            standing.src = "images/jumpV1.png";
+        }
     }
 
     checkEdges();
-    
-    if (jump) {
-        jumpLogic();
-    } else if (!onGround()) {
-        fallingJump();
-    }
+
+
 }
+
 function keyDownHandler(e) {
     if (e.key == "Right" || e.key == "ArrowRight") {
         rightArrow = true;
     }
     else if (e.key == "Left" || e.key == "ArrowLeft") {
         leftArrow = true;
-    } else if (e.keyCode == '38') {
+    } 
+    else if (e.keyCode == '38') {
         if (!jump) {
             startHeight = vivY;
         }
         jump = true;
-        
     }
 }
 
@@ -161,6 +178,7 @@ function risingJump() {
 }
 
 function fallingJump() {
+    console.log("falling");        
     checkEdges();
     if (onGround()) {
         rising = true;
@@ -168,15 +186,16 @@ function fallingJump() {
     }
     setTimeout(function() {
         
-        if (!onGround()) {
+        if (!onGround() && !rising) {
+            console.log("fell a bit");
             vivY = vivY + 4;
 
             if (onGround()) {
                 rising = true;
                 jump = false;
             }
-        } 
-    }, 500);
+        }
+    }, 250);
 }
 
 function startGame() {
