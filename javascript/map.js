@@ -10,6 +10,42 @@ class feature {
         this.height = h;
     }
 }
+
+class Virus extends feature {
+    xCoord;
+    yCoord;
+    width;
+    height;
+    westBound;
+    eastBound;
+    direction = "east";
+
+    constructor(x, y, w, h, wB, eB) {
+        super(x, y, w, h);
+        this.xCoord = x;
+        this.yCoord = y;
+        this.width = w;
+        this.height = h;
+        this.westBound = wB;
+        this.eastBound = eB;
+    }
+
+    crawl() {
+        if (this.direction === "west") {
+            this.xCoord = this.xCoord + 4;
+            if (this.xCoord > this.eastBound) {
+                this.direction = "east"
+            }
+        // if (this.direction = "east")
+        } else {
+            this.xCoord = this.xCoord - 4;
+            if (this.xCoord < this.westBound) {
+                this.direction = "west"
+            }
+        }
+    }
+
+}
 //startgame button
 let startBtn = document.getElementById("start-button");
 startBtn.addEventListener("click", startGame);
@@ -18,28 +54,34 @@ var map = document.getElementById("gameBoard");
 var context = map.getContext("2d");
 
 var backGround = context.createLinearGradient(0,600,0,0);
-backGround.addColorStop(0, "#B91372"); //bottom color
-backGround.addColorStop(1, "#42378F"); //top color
+backGround.addColorStop(0, "#000000"); //bottom color
+backGround.addColorStop(1, "#6f0000"); //top color
 context.fillStyle = backGround; 
 //color background
 context.fillRect(0,0,1200,600);
 
 const standing = new Image();
 const dirtBlock = new Image();
+const virus = new Image();
+
 standing.addEventListener("load", function() {
     context.drawImage(standing, 0, 400);
     context.drawImage(dirtBlock, 300, 400);
+    context.drawImage(virus, firstVirus.xCoord, firstVirus.yCoord);
 }, false);
+
 standing.src = "images/standGun.png";
 dirtBlock.src = "images/dirtBlock.png";
+virus.src = "images/virus.png"
 
 let dirt = new feature(300, 400, 200, 200);
+let firstVirus = new Virus(500, 450, 150, 150, 500, 1050);
 
 function gameLoop() {
     input();
 
     move();
-    console.log(vivY, startHeight, rising, jump);
+    //console.log(vivY, startHeight, rising, jump);
     window.requestAnimationFrame(gameLoop);
 }
 var vivX = 0;
@@ -48,11 +90,15 @@ var onTop = false;
 
 var leftArrow = false;
 var rightArrow = false;
+let direction;
 
 var jump = false;
 var rising = true;
 let falling = false;
 let startHeight;
+
+let shooting = false;
+let shootTime = 0;
 
 function move() {
 
@@ -60,40 +106,61 @@ function move() {
     context.fillRect(0,0,1200,600);
     context.drawImage(standing, vivX, vivY);
     context.drawImage(dirtBlock, 300, 400);
+    context.drawImage(virus, firstVirus.xCoord, firstVirus.yCoord);
 }
 
 function input() {
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
-
+    let stance;
     if (jump) {
-        standing.src = "images/jumpV1.png";
+        stance = "images/jumpV1.png";
         jumpLogic();
     } else if (!onGround()) {
         rising = false;
-        standing.src = "images/jumpV1.png";
+        stance = "images/jumpV1.png";
         fallingJump();
     } else {
-        standing.src = "images/standGun.png";
+        stance = "images/standGun.png";
     }
 
     if (leftArrow) {
-        standing.src = "images/running1flipped.png";
+        stance = "images/running1flipped.png";
+        direction = "left";
         vivX = vivX - 4;
-        if (!onGround) {
-            standing.src = "images/jumpLeftV1.1.png";
+        if (!onGround()) {
+            stance = "images/jumpLeftV1.png";
         }
     } else if (rightArrow) {
-        standing.src = "images/running1.png";
+        stance = "images/running1.png";
+        direction = "right";
         vivX = vivX + 4;
-        if (!onGround) {
-            standing.src = "images/jumpV1.png";
+        if (!onGround()) {
+            stance = "images/jumpV1.png";
         }
     }
 
+    if (shooting) {
+        if (direction === "right") {
+            stance = "images/firingGun.png";
+        } else {
+            stance = "images/firingGunLeft.png"
+        }
+
+        shootTime++;
+        if (shootTime > 20) {
+            shootTime = 0;
+
+            shooting = false;
+        }
+    }
+
+    //console.log(stance);
+    standing.src = stance;
+
     checkEdges();
 
-
+    firstVirus.crawl();
 }
 
 function keyDownHandler(e) {
@@ -108,6 +175,8 @@ function keyDownHandler(e) {
             startHeight = vivY;
         }
         jump = true;
+    } else if (e.keyCode = '62') {
+        shooting = true;
     }
 }
 
@@ -178,7 +247,7 @@ function risingJump() {
 }
 
 function fallingJump() {
-    console.log("falling");        
+    //console.log("falling");        
     checkEdges();
     if (onGround()) {
         rising = true;
@@ -187,7 +256,7 @@ function fallingJump() {
     setTimeout(function() {
         
         if (!onGround() && !rising) {
-            console.log("fell a bit");
+            //console.log("fell a bit");
             vivY = vivY + 4;
 
             if (onGround()) {
@@ -201,4 +270,13 @@ function fallingJump() {
 function startGame() {
     start.classList.add("playing");
 }
+
+// function shotShoot() {
+//     if (bullet3 === undefined) {
+//         let bullet1 = new feature(vivX  + 100, vivY - 100, 10, 10);
+//         let bullet2 = new feature(vivX  + 100, vivY - 100, 10, 10);
+//         let bullet3 = new feature(vivX  + 100, vivY - 100, 10, 10);
+//     }
+// }
+
 gameLoop();
