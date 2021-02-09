@@ -19,6 +19,7 @@ class Virus extends feature {
     westBound;
     eastBound;
     direction = "east";
+    virusExists;
 
     constructor(x, y, w, h, wB, eB) {
         super(x, y, w, h);
@@ -28,6 +29,7 @@ class Virus extends feature {
         this.height = h;
         this.westBound = wB;
         this.eastBound = eB;
+        this.virusExists = true;
     }
 
     crawl() {
@@ -84,21 +86,37 @@ function gameLoop() {
     //console.log(vivY, startHeight, rising, jump);
     window.requestAnimationFrame(gameLoop);
 }
+//character variables
 var vivX = 0;
 let vivY = 400;
 var onTop = false;
 
+//running variables
 var leftArrow = false;
 var rightArrow = false;
 let direction;
 
+//jump variables
 var jump = false;
 var rising = true;
 let falling = false;
 let startHeight;
 
+//gun variable
+let aimGun = false;
 let shooting = false;
 let shootTime = 0;
+let shootDirection;
+let shootStartX;
+let shootStartY;
+let bullet1;
+let bullet2;
+let bullet3;
+let bullet4;
+let bullet5;
+let bullets = [];
+
+//let virusExists = true;
 
 function move() {
 
@@ -106,7 +124,24 @@ function move() {
     context.fillRect(0,0,1200,600);
     context.drawImage(standing, vivX, vivY);
     context.drawImage(dirtBlock, 300, 400);
-    context.drawImage(virus, firstVirus.xCoord, firstVirus.yCoord);
+    if (firstVirus.virusExists) {
+        context.drawImage(virus, firstVirus.xCoord, firstVirus.yCoord);
+    }
+    if (shooting) {
+        context.beginPath();
+        context.fillStyle = "#b87333";
+        context.arc(bullet3.xCoord, bullet1.yCoord,5,0,2*Math.PI);
+        context.fill();
+        context.arc(bullet3.xCoord, bullet2.yCoord,5,0,2*Math.PI);
+        context.fill();
+        context.arc(bullet3.xCoord, bullet3.yCoord,5,0,2*Math.PI);
+        context.fill();
+        context.arc(bullet3.xCoord, bullet4.yCoord,5,0,2*Math.PI);
+        context.fill();
+        context.arc(bullet3.xCoord, bullet5.yCoord,5,0,2*Math.PI);
+        context.fill();
+    }
+    context.fillStyle = backGround; 
 }
 
 function input() {
@@ -140,27 +175,34 @@ function input() {
         }
     }
 
-    if (shooting) {
+    if (aimGun) {
         if (direction === "right") {
             stance = "images/firingGun.png";
         } else {
             stance = "images/firingGunLeft.png"
         }
-
+        
         shootTime++;
         if (shootTime > 20) {
             shootTime = 0;
 
-            shooting = false;
+            aimGun = false;
         }
     }
 
-    //console.log(stance);
+    if (shooting) {
+        shotShoot(firstVirus);
+    }
+
     standing.src = stance;
 
     checkEdges();
+    if (firstVirus.virusExists) {
+        firstVirus.crawl();
 
-    firstVirus.crawl();
+        checkCollision(firstVirus);
+    }
+
 }
 
 function keyDownHandler(e) {
@@ -176,6 +218,7 @@ function keyDownHandler(e) {
         }
         jump = true;
     } else if (e.keyCode = '62') {
+        aimGun = true;
         shooting = true;
     }
 }
@@ -221,6 +264,19 @@ function checkEdges() {
     }
 }
 
+function checkCollision(susVirus) {
+    if (vivX >= susVirus.xCoord - 100 &&
+        vivX <= susVirus.xCoord + susVirus.width &&
+        vivY >= susVirus.yCoord - susVirus.height) {
+        vivDies();
+    }
+}
+
+function vivDies() {
+    standing.src = "images/standGun.png";
+    vivX = 0;
+    vivY = 400;
+}
 function jumpLogic() {
     if (rising) {
         risingJump();
@@ -247,7 +303,6 @@ function risingJump() {
 }
 
 function fallingJump() {
-    //console.log("falling");        
     checkEdges();
     if (onGround()) {
         rising = true;
@@ -256,7 +311,6 @@ function fallingJump() {
     setTimeout(function() {
         
         if (!onGround() && !rising) {
-            //console.log("fell a bit");
             vivY = vivY + 4;
 
             if (onGround()) {
@@ -271,12 +325,71 @@ function startGame() {
     start.classList.add("playing");
 }
 
-// function shotShoot() {
-//     if (bullet3 === undefined) {
-//         let bullet1 = new feature(vivX  + 100, vivY - 100, 10, 10);
-//         let bullet2 = new feature(vivX  + 100, vivY - 100, 10, 10);
-//         let bullet3 = new feature(vivX  + 100, vivY - 100, 10, 10);
-//     }
-// }
+
+function shotShoot(susVirus) {
+    if (bullet3 === undefined) {
+        if (direction === "right") {
+            bullet1 = new feature(vivX + 100, vivY + 100, 10, 10);
+            bullet2 = new feature(vivX + 100, vivY + 100, 10, 10);
+            bullet3 = new feature(vivX + 100, vivY + 100, 10, 10);
+            bullet4 = new feature(vivX + 100, vivY + 100, 10, 10);
+            bullet5 = new feature(vivX + 100, vivY + 100, 10, 10);
+            bullets = [bullet1, bullet2, bullet3, bullet4, bullet5];
+            shootStartX = vivX + 100;
+        } else {
+            bullet1 = new feature(vivX, vivY + 100, 10, 10);
+            bullet2 = new feature(vivX, vivY + 100, 10, 10);
+            bullet3 = new feature(vivX, vivY + 100, 10, 10);
+            bullet4 = new feature(vivX, vivY + 100, 10, 10);
+            bullet5 = new feature(vivX, vivY + 100, 10, 10);
+            bullets = [bullet1, bullet2, bullet3, bullet4, bullet5];
+            shootStartX = vivX;
+        }
+
+        shootDirection = direction;
+        shootStartY = vivY + 100;
+    } else {
+
+        for(let i = 0; i < 5; i ++) {
+            if (bullets[i].xCoord >= susVirus.xCoord - 100 &&
+                bullets[i].xCoord <= susVirus.xCoord + susVirus.width &&
+                bullets[i].yCoord >= susVirus.yCoord &&
+                bullets[i].yCoord <= susVirus.yCoord + susVirus.height) {
+                    susVirus.virusExists = false;
+                }
+        }
+        if (shootDirection === "right") {
+            if (bullet3.xCoord <= shootStartX + 290) {
+                bullet3.xCoord = bullet3.xCoord + 10;
+                bullet1.yCoord = (bullet3.xCoord - shootStartX)/12 + shootStartY;
+                bullet2.yCoord = (bullet3.xCoord - shootStartX)/6 + shootStartY;
+                bullet4.yCoord = shootStartY - (bullet3.xCoord - shootStartX)/6;
+                bullet5.yCoord = shootStartY - (bullet3.xCoord - shootStartX)/12;
+            } else {
+                shooting = false;
+                bullet1 = undefined;
+                bullet2 = undefined;
+                bullet3 = undefined;
+                bullet4 = undefined;
+                bullet5 = undefined;
+            }
+        } else {
+            if (bullet3.xCoord >= shootStartX - 290) {
+                bullet3.xCoord = bullet3.xCoord - 10;
+                bullet1.yCoord = (bullet3.xCoord - shootStartX)/12 + shootStartY;
+                bullet2.yCoord = (bullet3.xCoord - shootStartX)/6 + shootStartY;
+                bullet4.yCoord = shootStartY - (bullet3.xCoord - shootStartX)/6;
+                bullet5.yCoord = shootStartY - (bullet3.xCoord - shootStartX)/12;
+            } else {
+                shooting = false;
+                bullet1 = undefined;
+                bullet2 = undefined;
+                bullet3 = undefined;
+                bullet4 = undefined;
+                bullet5 = undefined;
+            }
+        }
+    }
+}
 
 gameLoop();
