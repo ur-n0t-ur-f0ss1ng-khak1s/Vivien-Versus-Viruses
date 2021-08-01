@@ -1,3 +1,7 @@
+/** A file for the two functions responsible for the shooting processes 
+ * positional logic and animation, respectively.
+ */
+
 /** shotShoot handles the action of a player shooting,
  *  the logic behind the resulting five bullets, and
  *  any resulting collisions.

@@ -1,6 +1,7 @@
 /** Here all the universal variables and class instances
  *  are initialized.
  */
+
 //initializing image instances
 const standing = new Image();
 const dirtBlock = new Image();

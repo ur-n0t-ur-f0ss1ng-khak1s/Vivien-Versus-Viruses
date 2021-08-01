@@ -1,5 +1,9 @@
 /** The Feature and Virus classes are defined here
  */
+
+/** Features are visible terrain on the canvas and they need coordinates
+ * and dimensions so viv cannot move through them.
+ */
 class Feature {
     xCoord;
     yCoord;
@@ -14,7 +18,10 @@ class Feature {
     }
 }
 
-class Virus extends Feature {
+/** Viruses have dimensions and coordinates like a feature but they 
+ * also 'crawl' back and forth in a set pattern or can stay immobile.
+ */
+class Virus {
     xCoord;
     yCoord;
     width;
@@ -26,7 +33,6 @@ class Virus extends Feature {
     image = "images/virus.png";
 
     constructor(x, y, w, h, wB, eB) {
-        super(x, y, w, h);
         this.xCoord = x;
         this.yCoord = y;
         this.width = w;
@@ -40,14 +46,10 @@ class Virus extends Feature {
     crawl() {
         if (this.direction === "west") {
             this.xCoord = this.xCoord + 2;
-            if (this.xCoord > this.eastBound) {
-                this.direction = "east"
-            }
+            if (this.xCoord > this.eastBound) this.direction = "east";
         } else {
             this.xCoord = this.xCoord - 2;
-            if (this.xCoord < this.westBound) {
-                this.direction = "west"
-            }
+            if (this.xCoord < this.westBound) this.direction = "west";
         }
     }
 }

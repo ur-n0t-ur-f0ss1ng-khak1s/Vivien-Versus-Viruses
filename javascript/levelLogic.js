@@ -1,3 +1,11 @@
+/** The fives levels in VVV each have their own unique features and layouts
+ * that warrant them having separate display and positioning logic. levelLogic.js
+ * contains the functions which contain level specific logic.
+ */
+
+/** An initializing function for the second level where the first
+ * level features are removed and the new ones are added.
+ */
 function levelTwo() {
     if (level === 1) {
         dirt = null;
@@ -18,6 +26,9 @@ function levelTwo() {
     existingFeatures.push(fourHundredBrickTower);
 }
 
+/** An initializing function for the third level where the second
+ * level features are removed and the new ones are added.
+ */
 function levelThree() {
     if (level === 2) {
         hundredByOneHundredBrick = null;
@@ -41,6 +52,9 @@ function levelThree() {
     existingFeatures.push(thirdFeature);
 }
 
+/** An initializing function for the fourth level where the third
+ * level features are removed and the new ones are added.
+ */
 function levelFour() {
     if (level === 3) {
         twoHundredBrickTower = null;
@@ -68,6 +82,9 @@ function levelFour() {
     existingFeatures.push(featureFour);
 }
 
+/** An initializing function for the fifth level where the fourth
+ * level features are removed and the new ones are added.
+ */
 function levelFive() {
     if (level === 4) {
         featureOne = null;
@@ -95,6 +112,9 @@ function levelFive() {
     existingFeatures.push(featureThree);
 }
 
+/** Here is where the images and elements are drawn onto the canvas depending
+ * on their existence and position.
+ */
 function levelDraw() {
     if (level === 1) {
         if (firstVirus.virusExists) {
@@ -133,19 +153,12 @@ function levelDraw() {
         context.drawImage(stillVirus, 450, 450);
         context.drawImage(stillVirus, 600, 450);
     } else if (level === 5) {
-        if (firstStillVirus.virusExists) {
-            context.drawImage(stillVirus, 550, 250);
-        }
-        if (secondVirus.virusExists) {
-            context.drawImage(virus2, secondVirus.xCoord, secondVirus.yCoord);
-        }
-        if (platformVirus.virusExists) {
-            context.drawImage(virusPlatform, platformVirus.xCoord, platformVirus.yCoord);
-        }
-        if (firstVirus.virusExists) {
-            context.drawImage(virus, firstVirus.xCoord, firstVirus.yCoord);
-        }
+        if (firstStillVirus.virusExists) context.drawImage(stillVirus, 550, 250);
+        if (secondVirus.virusExists) context.drawImage(virus2, secondVirus.xCoord, secondVirus.yCoord);
+        if (platformVirus.virusExists) context.drawImage(virusPlatform, platformVirus.xCoord, platformVirus.yCoord);
+        if (firstVirus.virusExists) context.drawImage(virus, firstVirus.xCoord, firstVirus.yCoord);
         if (squirted) context.drawImage(endTitle, 400, 100);
+
         context.drawImage(shortPlatform, 300, 500);
         context.drawImage(shortFloatingPlatform, 700, 300);
         context.drawImage(oneByTwo, 550, 400);
@@ -153,11 +166,12 @@ function levelDraw() {
     }
 }
 
+/** levelInteract is responsible for the positional logic that varies from level to level
+ * of the features, bullets, viv, and etc.
+ */
 function levelInteract() {
     if (level === 1) {
-        if (shooting) {
-            shotShoot(firstVirus);
-        }
+        if (shooting) shotShoot(firstVirus);
     
         if (firstVirus.virusExists && firstVirus.alive) {
             firstVirus.crawl();
@@ -165,9 +179,7 @@ function levelInteract() {
             checkCollision(firstVirus);
         }
     
-        if (existingFeatures.indexOf(dirt) === -1) {
-            existingFeatures.push(dirt);
-        }
+        if (existingFeatures.indexOf(dirt) === -1) existingFeatures.push(dirt);
     
         checkEdges(dirt);
         virus.src = firstVirus.image;
@@ -222,9 +234,7 @@ function levelInteract() {
     
         if (vivX >= 1100) levelFour();
     } else if (level === 4) {
-        if (shooting) {
-            shotShoot(firstVirus);
-        }
+        if (shooting) shotShoot(firstVirus);
     
         if (firstVirus.virusExists && firstVirus.alive) {
             firstVirus.crawl();
