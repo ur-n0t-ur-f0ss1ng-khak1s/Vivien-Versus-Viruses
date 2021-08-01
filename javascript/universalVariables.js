@@ -20,9 +20,7 @@ const shortPlatform = new Image();
 const shortFloatingPlatform = new Image();
 const oneByTwo = new Image();
 const vaccine = new Image();
-const taiwan = new Image();
-const duck = new Image();
-const angels = new Image();
+const endTitle = new Image();
 
 //images that will be displayed on the canvas
 standing.src = "images/standGun.png";
@@ -43,9 +41,7 @@ shortPlatform.src = "images/twentyFiveHundredLongBrickPlatform.png";
 shortFloatingPlatform.src = "images/threeHundredLongBrickPlatform.png";
 oneByTwo.src = "images/150x200.png";
 vaccine.src = "images/vaccine1.png";
-taiwan.src = "images/taiwanFlag.png";
-duck.src = "images/duckymomo.png";
-angels.src = "images/angels.png";
+endTitle.src = "images/endTitle.png";
 
 //define present and future features and viruses
 let dirt = new Feature(300, 400, 200, 200);
@@ -104,4 +100,4 @@ let existingFeatures = [];
 //vaccine variable
 let squirtTime = 0;
 let gameOver = false;
-let doOnce = true;
+let squirted = false;
